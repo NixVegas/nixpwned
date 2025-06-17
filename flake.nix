@@ -42,6 +42,10 @@
             inherit nixpkgs;
           };
         };
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [ rkflashtool rkdeveloptool usbutils ];
+        };
       };
     };
 }
