@@ -5,13 +5,22 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
   };
 
-  outputs = inputs@{ self, flake-parts, nixpkgs, ... }:
+  outputs =
+    inputs@{
+      self,
+      flake-parts,
+      nixpkgs,
+      ...
+    }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         inputs.flake-parts.flakeModules.easyOverlay
       ];
 
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
       flake = {
         nixosConfigurations.nixplay = nixpkgs.lib.nixosSystem {
@@ -27,25 +36,38 @@
         };
       };
 
-      perSystem = { config, system, pkgs, final, lib, ... }: {
-        _module.args.pkgs = import inputs.nixpkgs {
-          inherit system;
-          overlays = [
-            self.overlays.default
-          ];
+      perSystem =
+        {
+          config,
+          system,
+          pkgs,
+          final,
+          lib,
+          ...
+        }:
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              self.overlays.default
+            ];
 
-          config = { };
-        };
+            config = { };
+          };
 
-        overlayAttrs = with pkgs; {
-          nixplaySystem = callPackage ./pkgs/build-support/nixplay-system.nix {
-            inherit nixpkgs;
+          overlayAttrs = with pkgs; {
+            nixplaySystem = callPackage ./pkgs/build-support/nixplay-system.nix {
+              inherit nixpkgs;
+            };
+          };
+
+          devShells.default = pkgs.mkShell {
+            buildInputs = with pkgs; [
+              rkflashtool
+              rkdeveloptool
+              usbutils
+            ];
           };
         };
-
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [ rkflashtool rkdeveloptool usbutils ];
-        };
-      };
     };
 }

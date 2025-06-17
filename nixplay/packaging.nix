@@ -40,6 +40,12 @@ in
         default = system.system;
         readOnly = true;
       };
+      userdata = mkOption {
+        description = "The Nixplay userdata image";
+        type = types.package;
+        default = system.userdata;
+        readOnly = true;
+      };
       all = mkOption {
         description = "All Nixplay images";
         type = types.package;
