@@ -10,6 +10,7 @@
   symlinkJoin,
   android-tools,
   abootimg,
+  dtc,
   rkflashtool,
 }:
 
@@ -43,7 +44,7 @@ let
 
     phases = [ "installPhase" ];
 
-    mtdParts = mkMtdParts "rk29xxnand" [
+    mtdParts = mkMtdParts "rockchip-nfc" [
       [
         "uboot"
         4
@@ -156,12 +157,13 @@ let
     vendorHash = "sha256-18BpSdvdxjrauXtw7yl5be1hduxzcB/4coLJ9qOhXxU=";
   };
 
-  # What we SHOULD be using.
+  # The Nixplay boot image.
   boot = stdenvNoCC.mkDerivation {
     name = "nixplay-boot-${toplevel.name}";
 
     nativeBuildInputs = [
       android-tools
+      dtc
       rsce-go
     ];
 
@@ -169,6 +171,13 @@ let
 
     installPhase = ''
       runHook preInstall
+
+      cp --no-preserve=mode ${./rk-kernel.dtb} rk-kernel.dtb
+
+      # in case you want to modify the DT
+      #dtc -O dts rk-kernel.dtb > rk-kernel.dts
+      #sed -i 's/rockchip,rk-nandc/rockchip,rk2928-nfc/g' rk-kernel.dts
+      #dtc -O dtb rk-kernel.dts > rk-kernel.dtb
 
       cat ${kernel}/zImage rk-kernel.dtb > zImage+dtb
 
@@ -186,37 +195,8 @@ let
         --ramdisk_offset 0x2000000 \
         --pagesize 16384 \
         --cmdline "$(<${toplevel}/kernel-params) init=/init" \
+        --tags_offset 0x88000 \
         --output $out/boot.img
-        runHook postInstall
-    '';
-  };
-
-  # Super hacky, takes their boot.img and repacks it.
-  boot' = stdenvNoCC.mkDerivation {
-    name = "nixplay-boot-${toplevel.name}";
-
-    nativeBuildInputs = [
-      android-tools
-      abootimg
-      rsce-go
-    ];
-
-    phases = [ "installPhase" ];
-
-    installPhase = ''
-      runHook preInstall
-
-      mkdir -p $out
-      cp ${./boot.img} boot.img
-      abootimg -x boot.img
-
-      sed -Ei 's!^bootsize\s*=\s*.+$!bootsize = 0x3000000!g' bootimg.cfg
-      sed -Ei 's!^cmdline\s*=\s*.+$!cmdline = '"$(<${toplevel}/kernel-params)"'!g' bootimg.cfg
-
-      cat bootimg.cfg
-
-      abootimg --create $out/boot.img -f bootimg.cfg -k zImage -r ${toplevel}/initrd -s stage2.img
-
       runHook postInstall
     '';
   };
@@ -285,13 +265,12 @@ symlinkJoin {
   paths = [
     params
     kernel'
-    boot'
+    boot
     userdata
   ];
   passthru = {
     kernel = kernel';
     system = system';
-    boot = boot';
-    inherit params userdata;
+    inherit boot params userdata;
   };
 }
