@@ -1,6 +1,6 @@
 # nixpwned
 
-Getting NixOS to run on the [nixplay](https://nixplaysucks.com).
+In a major feat of [nominative determinism](https://en.wikipedia.org/wiki/Nominative_determinism), we got NixOS to run on the [nixplay](https://nixplaysucks.com).
 
 Status: We have Linux 6.12 booting!
 
