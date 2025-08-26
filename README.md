@@ -35,12 +35,12 @@ These run Android 5 (!!!) which is truly ancient.
 
 Run `nix develop`.
 
-- Reset into MaskROM mode. On some Nixplay devices this is, bogglingly, holding the externally facing reset button and plugging USB in.
+- Reset into MaskROM mode. On some Nixplay devices this is, bogglingly, holding the externally facing reset button (which isn't a factory reset, it lets you go into MaskROM mode without opening the case) and plugging USB in.
 - Run lsusb and you should see the Rockchip MaskROM device.
 
 ## Serial
 
-One of [these](https://www.amazon.com/PCBite-4xSP10-Digital-Probes/dp/B08W3RM861) works great for finding the pins (thanks @MatthewCroughan for finding the pins)
+One of [these](https://www.amazon.com/PCBite-4xSP10-Digital-Probes/dp/B08W3RM861) works great for finding the pins (thanks @MatthewCroughan for the suggestion)
 
 Use 3.3v logic levels, [here's an adapter](https://www.amazon.com/Modules-Converter-Supports-Switching-Optional/dp/B0D76GPH4V)
 
