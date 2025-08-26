@@ -2,15 +2,38 @@
 
 Getting NixOS to run on the [nixplay](https://nixplaysucks.com).
 
-Status:
+Status: We have Linux 6.12 booting!
 
 - Serial works!
 - Display kind of works with the old device tree (but graphics are corrupt)
 - Device tree needs forward porting
+- CPU dies if we use more than one core
+
+![](/img/boot.jpg)
+
+## Hardware
+
+Tested against the Nixplay W10K or [Apolosign](https://www.amazon.com/ApoloSign-Digital-1920x1080-Auto-Rotate-Instantly/dp/B0CQCMQRWX) frames.
+
+Note that the Apolosign has better hardware, including a newer PCB and better flash chip. They're all RK3126C based, though.
+
+### Nixplay W10K
+
+![](/img/w10k.jpg)
+
+![](/img/graphics.jpg)
+
+### Apolosign 10.1 inch ("powered by Nixplay")
+
+![](/img/apolosign.jpg)
+
+### Existing software
+
+These run Android 5 (!!!)
 
 ## Development
 
-Run `nix develop` and follow instructions in the shell hook.
+Run `nix develop`.
 
 - Reset into MaskROM mode. On some Nixplay devices this is, bogglingly, holding the externally facing reset button and plugging USB in.
 - Run lsusb and you should see the Rockchip MaskROM device.
