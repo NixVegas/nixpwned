@@ -29,7 +29,7 @@ Note that the Apolosign has better hardware, including a newer PCB and better fl
 
 ### Existing software
 
-These run Android 5 (!!!)
+These run Android 5 (!!!) which is truly ancient.
 
 ## Development
 
@@ -40,7 +40,7 @@ Run `nix develop`.
 
 ## Serial
 
-One of [these](https://www.amazon.com/PCBite-4xSP10-Digital-Probes/dp/B08W3RM861) works great for finding the pins (thanks @MatthewCrougha for finding the pins)
+One of [these](https://www.amazon.com/PCBite-4xSP10-Digital-Probes/dp/B08W3RM861) works great for finding the pins (thanks @MatthewCroughan for finding the pins)
 
 Use 3.3v logic levels, [here's an adapter](https://www.amazon.com/Modules-Converter-Supports-Switching-Optional/dp/B0D76GPH4V)
 
