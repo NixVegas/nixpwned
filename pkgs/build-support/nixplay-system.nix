@@ -17,14 +17,36 @@
 {
   kernel,
   toplevel,
+  deviceTree,
 }:
 
 let
+  mkBlkDevParts =
+    blkdev: parts:
+    let
+      unpackedParts = lib.foldl' (acc: p: acc ++ [
+        {
+          name = lib.elemAt p 0;
+          sizeMb = lib.elemAt p 1;
+          offsetMb = if lib.length acc > 0 then
+            let
+              prev = lib.elemAt acc (lib.length acc - 1);
+            in
+              prev.sizeMb + prev.offsetMb
+          else
+            8;
+        }
+      ]) [] parts;
+    in
+      "${blkdev}:${lib.concatMapStringsSep "," (
+        p: "${if p.sizeMb < 1 then "-" else "${toString p.sizeMb}M"}@${toString p.offsetMb}M(${p.name})") unpackedParts
+      }";
+
   # Creates a mtdparts definition.
   mkMtdParts =
-    mtdpartsType: parts:
+    mtdpartsType: blkdev: parts:
     writeText "mtdparts.txt" ''
-      CMDLINE: @kernelParams@ mtdparts=${mtdpartsType}:
+      CMDLINE: @kernelParams@ blkdevparts=${mkBlkDevParts blkdev parts} mtdparts=${mtdpartsType}:
       ${lib.concatMapStringsSep "\n"
         (p: "${p.name} ${if p.sizeBlocks < 1 then "-" else toString p.sizeBlocks}")
         (
@@ -44,7 +66,7 @@ let
 
     phases = [ "installPhase" ];
 
-    mtdParts = mkMtdParts "rockchip-nfc" [
+    mtdParts = mkMtdParts "rockchip-nfc" "mmcblk2" [
       [
         "uboot"
         4
@@ -172,15 +194,8 @@ let
     installPhase = ''
       runHook preInstall
 
-      cp --no-preserve=mode ${./rk-kernel.dtb} rk-kernel.dtb
-
-      # in case you want to modify the DT
-      #dtc -O dts rk-kernel.dtb > rk-kernel.dts
-      #sed -i 's/rockchip,rk-nandc/rockchip,rk2928-nfc/g' rk-kernel.dts
-      #dtc -O dtb rk-kernel.dts > rk-kernel.dtb
-
-      cat ${kernel}/zImage rk-kernel.dtb > zImage+dtb
-
+      # The name (rk-kernel.dtb) is very important for u-boot.
+      cp $(ls ${deviceTree}/*.dtb) rk-kernel.dtb
       rsce-go --pack rk-kernel.dtb
       mv boot-second second.bin
 
@@ -194,11 +209,20 @@ let
         --ramdisk ${toplevel}/initrd \
         --ramdisk_offset 0x2000000 \
         --pagesize 16384 \
-        --cmdline "$(<${toplevel}/kernel-params) init=/init" \
+        --cmdline "$(<${toplevel}/kernel-params)" \
         --tags_offset 0x88000 \
         --output $out/boot.img
+
+      mv rk-kernel.dtb $out/
+
       runHook postInstall
     '';
+  };
+
+  # Boot with params, for rebuilds that don't need to touch the Nix store
+  boot' = symlinkJoin {
+    name = "nixplay-boot-with-params-${toplevel.name}";
+    paths = [ params boot ];
   };
 
   # Will work better (with overlayfs, even) using a NixOS built kernel.
@@ -217,16 +241,6 @@ let
       ln -s ${toplevel}/init files/init
     '';
   };
-
-  # Rootfs that works with the old kernel.
-  rootfs' = rootfs.overrideAttrs (_: {
-    MKE2FS_CONFIG = writeText "mke2fs.conf" ''
-      [fs_types]
-      ext4 = {
-        features = ^metadata_csum
-      }
-    '';
-  });
 
   # System that has the correct partition filename.
   system' = stdenvNoCC.mkDerivation {
@@ -254,7 +268,7 @@ let
       runHook preInstall
 
       mkdir -p $out
-      ln -s ${rootfs'} $out/userdata.img.zst
+      ln -s ${rootfs} $out/userdata.img.zst
 
       runHook postInstall
     '';
@@ -263,14 +277,14 @@ in
 symlinkJoin {
   name = "nixplay-${toplevel.name}";
   paths = [
-    params
+    boot'
     kernel'
-    boot
     userdata
   ];
   passthru = {
+    boot = boot';
     kernel = kernel';
     system = system';
-    inherit boot params userdata;
+    inherit params userdata;
   };
 }

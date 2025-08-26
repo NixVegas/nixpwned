@@ -20,16 +20,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1750133334,
-        "narHash": "sha256-urV51uWH7fVnhIvsZIELIYalMYsyr2FCalvlRTzqWRw=",
+        "lastModified": 1750506804,
+        "narHash": "sha256-VLFNc4egNjovYVxDGyBYTrvVCgDYgENp5bVi9fPTDYc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "36ab78dab7da2e4e27911007033713bab534187b",
+        "rev": "4206c4cb56751df534751b058295ea61357bbbaa",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.05",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -49,10 +49,65 @@
         "type": "github"
       }
     },
+    "nixpkgs-patch-mesa-cross": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-5/JeG/MlDtQb6TgJvOarL41fRBATgVYYb3GIpXJKTKA=",
+        "type": "file",
+        "url": "https://github.com/numinit/nixpkgs/commit/6cd855225dac518dde9e801e029be9b7753a2e0c.patch"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/numinit/nixpkgs/commit/6cd855225dac518dde9e801e029be9b7753a2e0c.patch"
+      }
+    },
+    "nixpkgs-patch-perl-cross": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-6A38DAK0jablrPjUf2H0RoG1I1xcWu/LTziITqFhTgA=",
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/418640.diff"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/418640.diff"
+      }
+    },
+    "nixpkgs-patch-sdl3-cross": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-MwjX3Ep+rt5LFgPReTT/B5RqrWBKME530MePMF7y07k=",
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/418646.diff"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/418646.diff"
+      }
+    },
+    "nixpkgs-patcher": {
+      "locked": {
+        "lastModified": 1750099685,
+        "narHash": "sha256-V9yCrLgjeXtfwJTFqqYvETrG3ewk07BX5JFW/a9ww5k=",
+        "owner": "gepbird",
+        "repo": "nixpkgs-patcher",
+        "rev": "31face0dbde1b38ddf33d1ae425ddfaf7958465d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gepbird",
+        "repo": "nixpkgs-patcher",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-patch-mesa-cross": "nixpkgs-patch-mesa-cross",
+        "nixpkgs-patch-perl-cross": "nixpkgs-patch-perl-cross",
+        "nixpkgs-patch-sdl3-cross": "nixpkgs-patch-sdl3-cross",
+        "nixpkgs-patcher": "nixpkgs-patcher"
       }
     }
   },

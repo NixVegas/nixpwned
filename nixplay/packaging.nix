@@ -11,6 +11,7 @@ let
 
   system = pkgs.nixplaySystem {
     inherit (config.system.build) toplevel kernel;
+    deviceTree = config.hardware.deviceTree.package;
   };
 in
 {

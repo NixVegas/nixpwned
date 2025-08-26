@@ -2,7 +2,20 @@
   description = "Installing NixOS on the nixplay";
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-patcher.url = "github:gepbird/nixpkgs-patcher";
+    nixpkgs-patch-perl-cross = {
+      url = "https://github.com/NixOS/nixpkgs/pull/418640.diff";
+      flake = false;
+    };
+    nixpkgs-patch-sdl3-cross = {
+      url = "https://github.com/NixOS/nixpkgs/pull/418646.diff";
+      flake = false;
+    };
+    nixpkgs-patch-mesa-cross = {
+      url = "https://github.com/numinit/nixpkgs/commit/6cd855225dac518dde9e801e029be9b7753a2e0c.patch";
+      flake = false;
+    };
   };
 
   outputs =
@@ -10,6 +23,7 @@
       self,
       flake-parts,
       nixpkgs,
+      nixpkgs-patcher,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -23,12 +37,13 @@
       ];
 
       flake = {
-        nixosConfigurations.nixplay = nixpkgs.lib.nixosSystem {
+        nixosConfigurations.nixplay = nixpkgs-patcher.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
             ./nixplay
             self.nixosModules.default
           ];
+          specialArgs = inputs;
         };
 
         nixosModules.default = {
@@ -66,6 +81,7 @@
               rkflashtool
               rkdeveloptool
               usbutils
+              dtc
             ];
           };
         };
