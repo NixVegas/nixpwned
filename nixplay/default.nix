@@ -51,7 +51,7 @@
       {
         name = "rk312x";
         patch = ./0001-rockchip-prelim-rk3126c-support.patch;
-        extraStructuredConfig = {
+        structuredExtraConfig = {
           ARCH_ROCKCHIP = yes;
           ARM_ROCKCHIP_CPUFREQ = yes;
 
