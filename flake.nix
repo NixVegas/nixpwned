@@ -4,6 +4,10 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-patcher.url = "github:gepbird/nixpkgs-patcher";
+    nixpkgs-patch-llvm-git = {
+      url = "https://github.com/NixOS/nixpkgs/pull/441048.diff";
+      flake = false;
+    };
   };
 
   outputs =

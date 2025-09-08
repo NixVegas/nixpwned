@@ -10,6 +10,7 @@
 
   environment.systemPackages = with pkgs; [
     htop usbutils uhubctl
+    llvmPackages_git.clang
   ];
 
   boot = {
@@ -225,7 +226,7 @@
         }
       ];
     };
-    graphics.enable = true;
+    #graphics.enable = true;
   };
 
   fileSystems = {
@@ -263,7 +264,7 @@
     };*/
   };
 
-  programs.sway.enable = true;
+  #programs.sway.enable = true;
 
   users.users.nixos = {
     isNormalUser = true;
@@ -310,6 +311,11 @@
         cmakeFlags = prevAttrs.cmakeFlags or [ ] ++ lib.optionals pkgs.stdenv.hostPlatform.isAarch32 [
           "-DCMAKE_C_FLAGS=-flax-vector-conversions"
         ];
+      });
+      nghttp2 = prev.nghttp2.overrideAttrs (prevAttrs: {
+        env = lib.optionalAttrs pkgs.stdenv.hostPlatform.isAarch32 {
+          NIX_CFLAGS_COMPILE = "-flax-vector-conversions";
+        };
       });
       sdl3 = prev.sdl3.override {
         # ibus fails to compile on cross
